@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="uk">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevCRM - Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+            color: #e2e8f0;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid rgba(71, 85, 105, 0.3);
+            padding: 25px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(71, 85, 105, 0.3);
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(45deg, #6366f1, #8b5cf6);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 8px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: #94a3b8;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            background: rgba(99, 102, 241, 0.1);
+            color: #6366f1;
+        }
+
+        .nav-link.active {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 25px;
+        }
+
+        .header {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 15px;
+            padding: 25px 30px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #6366f1, #8b5cf6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 20px;
+            border: 3px solid rgba(99, 102, 241, 0.3);
+        }
+
+        .user-details h2 {
+            color: #f1f5f9;
+            margin-bottom: 5px;
+        }
+
+        .user-details p {
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        .tech-stack {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .tech-badge {
+            background: rgba(99, 102, 241, 0.2);
+            color: #a5b4fc;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .discord-status {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(88, 101, 242, 0.2);
+            border: 1px solid rgba(88, 101, 242, 0.3);
+            color: #a5b4fc;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background: #57f287;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+                box-shadow: 0 0 0 0 rgba(87, 242, 135, 0.7);
+            }
+
+            70% {
+                opacity: 1;
+                box-shadow: 0 0 0 10px rgba(87, 242, 135, 0);
+            }
+
+            100% {
+                opacity: 1;
+                box-shadow: 0 0 0 0 rgba(87, 242, 135, 0);
+            }
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6, #ec4899);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(99, 102, 241, 0.5);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+            position: relative;
+        }
+
+        .project-icon {
+            background: linear-gradient(45deg, #f59e0b, #d97706);
+        }
+
+        .time-icon {
+            background: linear-gradient(45deg, #3b82f6, #1d4ed8);
+        }
+
+        .task-icon {
+            background: linear-gradient(45deg, #10b981, #059669);
+        }
+
+        .report-icon {
+            background: linear-gradient(45deg, #8b5cf6, #7c3aed);
+        }
+
+        .schedule-icon {
+            background: linear-gradient(45deg, #ef4444, #dc2626);
+        }
+
+        .stats-icon {
+            background: linear-gradient(45deg, #06b6d4, #0891b2);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #f1f5f9;
+        }
+
+        .stat-number {
+            font-size: 42px;
+            font-weight: 900;
+            color: #f1f5f9;
+            margin-bottom: 8px;
+            background: linear-gradient(45deg, #6366f1, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            color: #94a3b8;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .project-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .project-item {
+            padding: 18px;
+            border-radius: 12px;
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(71, 85, 105, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .project-item:hover {
+            background: rgba(99, 102, 241, 0.1);
+            border-color: rgba(99, 102, 241, 0.3);
+            transform: translateX(5px);
+        }
+
+        .project-name {
+            font-weight: 700;
+            color: #f1f5f9;
+            margin-bottom: 6px;
+            font-size: 16px;
+        }
+
+        .project-role {
+            color: #94a3b8;
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+
+        .project-progress {
+            width: 100%;
+            height: 8px;
+            background: rgba(71, 85, 105, 0.3);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            border-radius: 4px;
+            transition: width 0.8s ease;
+            position: relative;
+        }
+
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                transform: translateX(-100%);
+            }
+
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        .time-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .time-stat {
+            text-align: center;
+            padding: 15px;
+            background: rgba(30, 41, 59, 0.3);
+            border-radius: 10px;
+            border: 1px solid rgba(71, 85, 105, 0.2);
+        }
+
+        .time-stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: #6366f1;
+            margin-bottom: 5px;
+        }
+
+        .time-stat-label {
+            font-size: 12px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .schedule-info {
+            background: rgba(30, 41, 59, 0.3);
+            border: 1px solid rgba(71, 85, 105, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 15px;
+        }
+
+        .schedule-day {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(71, 85, 105, 0.2);
+        }
+
+        .schedule-day:last-child {
+            border-bottom: none;
+        }
+
+        .day-name {
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+
+        .day-hours {
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        .task-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .task-category {
+            text-align: center;
+            flex: 1;
+        }
+
+        .task-count {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .task-count.in-progress {
+            color: #3b82f6;
+        }
+
+        .task-count.completed {
+            color: #10b981;
+        }
+
+        .task-category-label {
+            font-size: 12px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .reports-section {
+            background: rgba(30, 41, 59, 0.3);
+            border: 1px solid rgba(71, 85, 105, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 15px;
+        }
+
+        .report-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(71, 85, 105, 0.2);
+        }
+
+        .report-item:last-child {
+            border-bottom: none;
+        }
+
+        .report-date {
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+
+        .report-status {
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-sent {
+            background: rgba(16, 185, 129, 0.2);
+            color: #34d399;
+        }
+
+        .status-pending {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .left-column,
+        .right-column {
+            display: flex;
+            flex-direction: column;
+
+            gap: 25px;
+        }
+
+        .left-column>*,
+        .right-column>* {
+            flex-grow: 1;
+        }
+
+        .activity-card {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+        }
+
+        .activity-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            border-radius: 12px;
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(71, 85, 105, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .activity-item:hover {
+            background: rgba(99, 102, 241, 0.1);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: white;
+            background: linear-gradient(45deg, #10b981, #059669);
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-weight: 600;
+            color: #f1f5f9;
+            margin-bottom: 4px;
+        }
+
+        .activity-time {
+            color: #94a3b8;
+            font-size: 13px;
+        }
+
+        .time-tracker {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+        }
+
+        .timer-info {
+            flex: 1;
+        }
+
+        .timer-label {
+            font-size: 16px;
+            font-weight: 600;
+            color: #94a3b8;
+            margin-bottom: 8px;
+        }
+
+        .timer-display {
+            font-size: 32px;
+            font-weight: 900;
+            background: linear-gradient(45deg, #10b981, #059669);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .timer-btn {
+            background: linear-gradient(45deg, #10b981, #059669);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+        }
+
+        .timer-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+        }
+
+        .timer-btn.stop {
+            background: linear-gradient(45deg, #ef4444, #dc2626);
+        }
+
+        .timer-btn.stop:hover {
+            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.3);
+        }
+
+        .discord-integration {
+            background: linear-gradient(135deg, #5865f2 0%, #4752c4 100%);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .action-btn {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .notification-badge {
+            background: #ef4444;
+            color: white;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin-left: 8px;
+            font-weight: 700;
+        }
+
+        /* Scrollbar стили */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(71, 85, 105, 0.1);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(99, 102, 241, 0.5);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(99, 102, 241, 0.7);
+        }
+
+        @media (max-width: 1200px) {
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            }
+
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .time-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layout">
+        <nav class="sidebar">
+            <div class="logo">
+                <div class="logo-icon">🚀</div>
+                <div>
+                    <h3 style="color: #f1f5f9;">DevCRM</h3>
+                    <p style="font-size: 12px; color: #64748b;">v2.1.0</p>
+                </div>
+            </div>
+
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link active">
+                        <span>📊</span>
+                        Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <span>📋</span>
+                        Проекти
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <span>⏰</span>
+                        Час роботи
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <span>✅</span>
+                        Завдання
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <span>📈</span>
+                        Звіти
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <span>👥</span>
+                        Команда
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <span>🤖</span>
+                        Discord Bot
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <span>⚙️</span>
+                        Налаштування
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <main class="main-content">
+            <div class="header">
+                <div class="user-info">
+                    <div class="avatar">ОМ</div>
+                    <div class="user-details">
+                        <h2>Олександр Мельник</h2>
+                        <p>Senior Full-Stack Developer • 3 роки досвіду</p>
+                        <div class="tech-stack">
+                            <span class="tech-badge">React</span>
+                            <span class="tech-badge">Node.js</span>
+                            <span class="tech-badge">Python</span>
+                            <span class="tech-badge">PostgreSQL</span>
+                            <span class="tech-badge">Docker</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="discord-status">
+                    <div class="status-dot"></div>
+                    Online в Discord
+                    <span class="notification-badge">5</span>
+                </div>
+            </div>
+
+            <div class="time-tracker">
+                <div class="timer-info">
+                    <div class="timer-label">Поточна робоча сесія:</div>
+                    <div class="timer-display">03:47:23</div>
+                </div>
+                <div>
+                    <button class="timer-btn" onclick="toggleTimer()">⏸️ Пауза</button>
+                    <button class="timer-btn stop" onclick="stopTimer()">⏹️ Стоп</button>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon project-icon">📋</div>
+                        <div class="card-title">Активні Проекти</div>
+                    </div>
+                    <div class="project-list">
+                        <div class="project-item">
+                            <div class="project-name">E-Commerce Platform</div>
+                            <div class="project-role">Lead Frontend Developer</div>
+                            <div class="project-progress">
+                                <div class="progress-bar" style="width: 78%"></div>
+                            </div>
+                        </div>
+                        <div class="project-item">
+                            <div class="project-name">Mobile Banking App</div>
+                            <div class="project-role">Backend Developer</div>
+                            <div class="project-progress">
+                                <div class="progress-bar" style="width: 45%"></div>
+                            </div>
+                        </div>
+                        <div class="project-item">
+                            <div class="project-name">CRM Dashboard</div>
+                            <div class="project-role">Full-Stack Developer</div>
+                            <div class="project-progress">
+                                <div class="progress-bar" style="width: 92%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon report-icon">📝</div>
+                        <div class="card-title">Денні Звіти</div>
+                    </div>
+                    <div class="reports-section">
+                        <div class="report-item">
+                            <span class="report-date">11 Червня</span>
+                            <span class="report-status status-pending">Очікує</span>
+                        </div>
+                        <div class="report-item">
+                            <span class="report-date">10 Червня</span>
+                            <span class="report-status status-sent">Відправлено</span>
+                        </div>
+                        <div class="report-item">
+                            <span class="report-date">9 Червня</span>
+                            <span class="report-status status-sent">Відправлено</span>
+                        </div>
+                        <div class="report-item">
+                            <span class="report-date">8 Червня</span>
+                            <span class="report-status status-sent">Відправлено</span>
+                        </div>
+                        <div class="report-item">
+                            <span class="report-date">7 Червня</span>
+                            <span class="report-status status-sent">Відправлено</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon stats-icon">⏰</div>
+                        <div class="card-title">Статистика Часу</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div class="stat-number">47.5</div>
+                        <div class="stat-label">годин цього тижня</div>
+                    </div>
+                    <div class="time-stats">
+                        <div class="time-stat">
+                            <div class="time-stat-number">8.5</div>
+                            <div class="time-stat-label">Сьогодні</div>
+                        </div>
+                        <div class="time-stat">
+                            <div class="time-stat-number">7.8</div>
+                            <div class="time-stat-label">Вчора</div>
+                        </div>
+                        <div class="time-stat">
+                            <div class="time-stat-number">189</div>
+                            <div class="time-stat-label">Цього місяця</div>
+                        </div>
+                        <div class="time-stat">
+                            <div class="time-stat-number">8.1</div>
+                            <div class="time-stat-label">Середнє/день</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="main-grid">
+                <div class="left-column">
+                    <div class="activity-card">
+                        <div class="card-header">
+                            <div class="card-icon" style="background: linear-gradient(45deg, #f59e0b, #d97706);">📈
+                            </div>
+                            <div class="card-title">Остання Активність</div>
+                        </div>
+                        <div class="activity-list">
+                            <div class="activity-item">
+                                <div class="activity-icon">💻</div>
+                                <div class="activity-content">
+                                    <div class="activity-title">Завершено розробку API для авторизації</div>
+                                    <div class="activity-time">E-Commerce Platform • 15 хвилин тому • React, Node.js
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-icon">🐛</div>
+                                <div class="activity-content">
+                                    <div class="activity-title">Виправлено баг з валідацією форм</div>
+                                    <div class="activity-time">Mobile Banking App • 1 година тому • JavaScript</div>
+                                </div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-icon">📝</div>
+                                <div class="activity-content">
+                                    <div class="activity-title">Відправлено денний звіт через Discord</div>
+                                    <div class="activity-time">Загальний • 2 години тому</div>
+                                </div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-icon">🔄</div>
+                                <div class="activity-content">
+                                    <div class="activity-title">Початок роботи над новою фічею</div>
+                                    <div class="activity-time">E-Commerce Platform • 3 години тому • React,
+                                        TypeScript
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-icon">🎯</div>
+                                <div class="activity-content">
+                                    <div class="activity-title">Завершено планування спринту</div>
+                                    <div class="activity-time">CRM Dashboard • 4 години тому</div>
+                                </div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-icon">🔍</div>
+                                <div class="activity-content">
+                                    <div class="activity-title">Code Review для PR #234</div>
+                                    <div class="activity-time">Mobile Banking App • 5 годин тому • Python</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon schedule-icon">🕒</div>
+                            <div class="card-title">Робочий Графік</div>
+                        </div>
+                        <div class="schedule-info">
+                            <div class="schedule-day">
+                                <span class="day-name">Понеділок</span>
+                                <span class="day-hours">09:00 - 18:00</span>
+                            </div>
+                            <div class="schedule-day">
+                                <span class="day-name">Вівторок</span>
+                                <span class="day-hours">09:00 - 18:00</span>
+                            </div>
+                            <div class="schedule-day">
+                                <span class="day-name">Середа</span>
+                                <span class="day-hours">10:00 - 19:00</span>
+                            </div>
+                            <div class="schedule-day">
+                                <span class="day-name">Четвер</span>
+                                <span class="day-hours">09:00 - 18:00</span>
+                            </div>
+                            <div class="schedule-day">
+                                <span class="day-name">П'ятниця</span>
+                                <span class="day-hours">09:00 - 17:00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="right-column">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon task-icon">✅</div>
+                            <div class="card-title">Завдання</div>
+                        </div>
+                        <div class="task-stats">
+                            <div class="task-category">
+                                <div class="task-count in-progress">8</div>
+                                <div class="task-category-label">В роботі</div>
+                            </div>
+                            <div class="task-category">
+                                <div class="task-count completed">24</div>
+                                <div class="task-category-label">Завершено</div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid rgba(71, 85, 105, 0.2);">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                <span style="color: #94a3b8;">Цього тижня:</span>
+                                <span style="color: #10b981; font-weight: 600;">+12</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="color: #94a3b8;">Ефективність:</span>
+                                <span style="color: #f59e0b; font-weight: 600;">94%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon" style="background: linear-gradient(45deg, #8b5cf6, #7c3aed);">🏆
+                            </div>
+                            <div class="card-title">Досягнення</div>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 12px;">
+                            <div
+                                style="display: flex; align-items: center; gap: 12px; padding: 12px; background: rgba(139, 92, 246, 0.1); border-radius: 10px; border: 1px solid rgba(139, 92, 246, 0.2);">
+                                <span style="font-size: 20px;">🔥</span>
+                                <div>
+                                    <div style="font-weight: 600; color: #f1f5f9; font-size: 14px;">7-денна серія
+                                    </div>
+                                    <div style="color: #94a3b8; font-size: 12px;">Без пропусків звітів</div>
+                                </div>
+                            </div>
+                            <div
+                                style="display: flex; align-items: center; gap: 12px; padding: 12px; background: rgba(16, 185, 129, 0.1); border-radius: 10px; border: 1px solid rgba(16, 185, 129, 0.2);">
+                                <span style="font-size: 20px;">⚡</span>
+                                <div>
+                                    <div style="font-weight: 600; color: #f1f5f9; font-size: 14px;">Швидкий
+                                        розробник
+                                    </div>
+                                    <div style="color: #94a3b8; font-size: 12px;">100+ коммітів за тиждень</div>
+                                </div>
+                            </div>
+                            <div
+                                style="display: flex; align-items: center; gap: 12px; padding: 12px; background: rgba(245, 158, 11, 0.1); border-radius: 10px; border: 1px solid rgba(245, 158, 11, 0.2);">
+                                <span style="font-size: 20px;">🎯</span>
+                                <div>
+                                    <div style="font-weight: 600; color: #f1f5f9; font-size: 14px;">Ментор команди
+                                    </div>
+                                    <div style="color: #94a3b8; font-size: 12px;">15+ код рев'ю</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="discord-integration">
+                <h3 style="margin-bottom: 15px;">🤖 Discord Інтеграція</h3>
+                <p style="margin-bottom: 20px; opacity: 0.9;">Автоматична синхронізація з Discord сервером. Всі
+                    звіти та
+                    повідомлення автоматично передаються боту.</p>
+                <div class="quick-actions">
+                    <button class="action-btn">📤 Відправити звіт</button>
+                    <button class="action-btn">💬 Написати лідеру</button>
+                    <button class="action-btn">📊 Переглянути статистику</button>
+                    <button class="action-btn">🔧 Налаштувати бота</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let isTimerRunning = true;
+        let seconds = 13643; // 3:47:23 в секундах
+
+        function updateTimer() {
+            if (isTimerRunning) {
+                seconds++;
+                const hours = Math.floor(seconds / 3600);
+                const minutes = Math.floor((seconds % 3600) / 60);
+                const secs = seconds % 60;
+
+                document.querySelector('.timer-display').textContent =
+                    `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }
+        }
+
+        function toggleTimer() {
+            isTimerRunning = !isTimerRunning;
+            const btn = document.querySelector('.timer-btn');
+            btn.innerHTML = isTimerRunning ? '⏸️ Пауза' : '▶️ Продовжити';
+        }
+
+        function stopTimer() {
+            isTimerRunning = false;
+            seconds = 0;
+            document.querySelector('.timer-display').textContent = '00:00:00';
+            document.querySelector('.timer-btn').innerHTML = '▶️ Старт';
+        }
+
+        setInterval(updateTimer, 1000);
+
+        // Анімація прогрес барів
+        window.addEventListener('load', () => {
+            const progressBars = document.querySelectorAll('.progress-bar');
+            progressBars.forEach(bar => {
+                const width = bar.style.width;
+                bar.style.width = '0%';
+                setTimeout(() => {
+                    bar.style.width = width;
+                }, 500);
+            });
+        });
+
+        // Симуляція оновлення даних
+        setInterval(() => {
+            const badge = document.querySelector('.notification-badge');
+            const current = parseInt(badge.textContent);
+            if (Math.random() > 0.85) {
+                badge.textContent = current + 1;
+            }
+        }, 20000);
+
+        // Анімація для карток при наведенні
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-8px)';
+            });
+
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0)';
+            });
+        });
+
+        // Симуляція реального часу для активності
+        function addNewActivity() {
+            const activities = [
+                { icon: '💻', title: 'Новий коммніт в репозиторій', project: 'E-Commerce Platform', tech: 'React' },
+                { icon: '🔄', title: 'Оновлено документацію', project: 'CRM Dashboard', tech: 'Markdown' },
+                { icon: '🎯', title: 'Завершено таск', project: 'Mobile Banking App', tech: 'Python' },
+                { icon: '💬', title: 'Відповідь в Discord каналі', project: 'Загальний', tech: '' }
+            ];
+
+            const randomActivity = activities[Math.floor(Math.random() * activities.length)];
+            const activityList = document.querySelector('.activity-list');
+            const newActivity = document.createElement('div');
+            newActivity.className = 'activity-item';
+            newActivity.style.opacity = '0';
+            newActivity.style.transform = 'translateY(-20px)';
+
+            newActivity.innerHTML = `
+                <div class="activity-icon">${randomActivity.icon}</div>
+                <div class="activity-content">
+                    <div class="activity-title">${randomActivity.title}</div>
+                    <div class="activity-time">${randomActivity.project} • щойно${randomActivity.tech ? ' • ' + randomActivity.tech : ''}</div>
+                </div>
+            `;
+
+            activityList.insertBefore(newActivity, activityList.firstChild);
+
+            // Анімація появи
+            setTimeout(() => {
+                newActivity.style.transition = 'all 0.5s ease';
+                newActivity.style.opacity = '1';
+                newActivity.style.transform = 'translateY(0)';
+            }, 100);
+
+            // Видалення старих активностей
+            if (activityList.children.length > 8) {
+                activityList.removeChild(activityList.lastChild);
+            }
+        }
+
+        // Додавання нової активності кожні 30-90 секунд
+        setInterval(addNewActivity, Math.random() * 60000 + 30000);
+    </script>
+</body>
+
+</html>
